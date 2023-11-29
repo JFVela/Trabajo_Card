@@ -1,6 +1,15 @@
 <?php require_once "config/conexion.php";
 require_once "config/config.php";
 ?>
+<?php
+session_start();
+if (!isset($_SESSION['id_cliente'])) {
+    header("Location: login.php");
+    exit();
+}
+$nombreCliente = $_SESSION['nombre'];
+$idCliente = $_SESSION['id_cliente'];
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -25,9 +34,15 @@ require_once "config/config.php";
         <nav class="navbar navbar-expand-lg navbar-light">
             <div class="container-fluid">
                 <a class="navbar-brand" href="./">TechBox</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <span class="navbar-text">
+                                Bienvenido <?php echo $nombreCliente; ?> (ID: <?php echo $idCliente; ?>)
+                            </span>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </nav>
     </div>

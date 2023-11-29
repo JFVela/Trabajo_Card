@@ -35,7 +35,7 @@
                         <div class="card-body p-5 shadow-5 text-center">
                             <!--BOTONES-->
                             <div class="d-grid gap-2 d-md-block">
-                                <a href="index.php" class="btn btn-warning" type="button">Volver a inicio</a> 
+                                <a href="index.php" class="btn btn-warning" type="button">Volver a inicio</a>
                                 <a href="login.php" class="btn btn-warning" type="button">Iniciar sección</a>
                             </div>
                             <h2 class="fw-bold mb-5">Create una cuenta ahora!</h2>
