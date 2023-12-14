@@ -68,6 +68,7 @@ $idCliente = $_SESSION['id_cliente'];
                                     <th>Precio</th>
                                     <th>Cantidad</th>
                                     <th>Sub Total</th>
+                                    <th>ACCION</th>
                                 </tr>
                             </thead>
                             <tbody id="tblCarrito">
@@ -79,19 +80,18 @@ $idCliente = $_SESSION['id_cliente'];
                 <div class="col-md-5 ms-auto">
                     <h4>Total a Pagar S/: <span id="total_pagar">0.00</span></h4>
 
-
-                    <!--Boton-->
-                    <div class="boton-modal">
-                        <label for="btn-modal">
-                            Pagar
-                        </label>
-
-                    </div>
+                    <!--Botones-->
                     <div class="d-grid gap-2">
+                        <div class="boton-modal">
+                            <label for="btn-modal" class="btn btn-primary">Pagar</label>
+                        </div>
                         <div id="paypal-button-container"></div>
                         <button class="btn btn-warning" type="button" id="btnVaciar">Vaciar Carrito</button>
+                        <button type="button" class="btn btn-success" style="margin-top: 5px;">Continuar Pedido</button>
                     </div>
-                    <!--Fin de Boton-->
+                    <!--Fin de Botones-->
+
+
                     <!--Ventana Modal-->
                     <input type="checkbox" id="btn-modal">
                     <div class="container-modal">
@@ -225,8 +225,6 @@ $idCliente = $_SESSION['id_cliente'];
     <script src="https://www.paypal.com/sdk/js?client-id=<?php echo CLIENT_ID; ?>&locale=<?php echo LOCALE; ?>"></script>
     <script src="assets/js/scripts.js"></script>
     <script>
-        mostrarCarrito();
-
         function mostrarCarrito() {
             if (localStorage.getItem("productos") != null) {
                 let array = JSON.parse(localStorage.getItem('productos'));
@@ -245,17 +243,27 @@ $idCliente = $_SESSION['id_cliente'];
                             let html = '';
                             res.datos.forEach(element => {
                                 html += `
-                            <tr>
-                                <td>${element.id}</td>
-                                <td>${element.nombre}</td>
-                                <td>${element.precio}</td>
-                                <td>1</td>
-                                <td>${element.precio}</td>
-                            </tr>
-                            `;
+                    <tr>
+                        <td>${element.id}</td>
+                        <td>${element.nombre}</td>
+                        <td>${element.precio}</td>
+                        <td>1</td>
+                        <td>${element.precio}</td>
+                        <td>
+                            <button class="btn btn-danger btnEliminar" data-id="${element.id}" onclick="eliminarProducto(${element.id})">Eliminar</button>
+                        </td>
+                    </tr>`;
                             });
+
                             $('#tblCarrito').html(html);
                             $('#total_pagar').text(res.total);
+
+                            // Volver a vincular eventos después de actualizar la tabla
+                            $('.btnEliminar').on('click', function() {
+                                const productId = $(this).data('id');
+                                eliminarProducto(productId);
+                            });
+
                             paypal.Buttons({
                                 style: {
                                     color: 'blue',
@@ -263,7 +271,6 @@ $idCliente = $_SESSION['id_cliente'];
                                     label: 'pay'
                                 },
                                 createOrder: function(data, actions) {
-                                    // This function sets up the details of the transaction, including the amount and line item details.
                                     return actions.order.create({
                                         purchase_units: [{
                                             amount: {
@@ -273,9 +280,7 @@ $idCliente = $_SESSION['id_cliente'];
                                     });
                                 },
                                 onApprove: function(data, actions) {
-                                    // This function captures the funds from the transaction.
                                     return actions.order.capture().then(function(details) {
-                                        // This function shows a transaction success message to your buyer.
                                         alert('Transaction completed by ' + details.payer.name.given_name);
                                     });
                                 }
@@ -288,10 +293,28 @@ $idCliente = $_SESSION['id_cliente'];
                 }
             }
         }
+
+        function eliminarProducto(id) {
+            // Obtener el índice del producto en el array productosEnCarrito
+            let productosEnCarrito = JSON.parse(localStorage.getItem('productos')) || [];
+            let index = productosEnCarrito.findIndex(producto => producto.id === id);
+
+            if (index !== -1) {
+                // Eliminar el producto del array
+                productosEnCarrito.splice(index, 1);
+
+                // Guardar el array actualizado en el localStorage
+                localStorage.setItem('productos', JSON.stringify(productosEnCarrito));
+
+                // Volver a cargar el carrito después de eliminar
+                mostrarCarrito();
+            }
+        }
+
+        $(document).ready(function() {
+            mostrarCarrito();
+        });
     </script>
-    <script src="assets/js/main.js"></script>
-
-
 </body>
 
 
