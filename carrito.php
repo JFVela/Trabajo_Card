@@ -63,6 +63,7 @@ $idCliente = $_SESSION['id_cliente'];
                         <table class="table table-hover">
                             <thead>
                                 <tr>
+                                    <th>Number</th>
                                     <th>#</th>
                                     <th>Producto</th>
                                     <th>Precio</th>
@@ -241,28 +242,38 @@ $idCliente = $_SESSION['id_cliente'];
                             console.log(response);
                             const res = JSON.parse(response);
                             let html = '';
-                            res.datos.forEach(element => {
-                                html += `
-                    <tr>
-                        <td>${element.id}</td>
-                        <td>${element.nombre}</td>
-                        <td>${element.precio}</td>
-                        <td>1</td>
-                        <td>${element.precio}</td>
-                        <td>
-                            <button class="btn btn-danger btnEliminar" data-id="${element.id}" onclick="eliminarProducto(${element.id})">Eliminar</button>
-                        </td>
-                    </tr>`;
-                            });
 
-                            $('#tblCarrito').html(html);
-                            $('#total_pagar').text(res.total);
+                            // Verificar si el array de productos no está vacío
+                            if (res.datos.length > 0) {
+                                res.datos.forEach((element, index) => {
+                                    html += `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>${element.id}</td>
+                            <td>${element.nombre}</td>
+                            <td>${element.precio}</td>
+                            <td>1</td>
+                            <td>${element.precio}</td>
+                            <td>
+                                <button class="btn btn-danger btnEliminar" data-number="${index + 1}">Eliminar</button>
+                            </td>
+                        </tr>`;
+                                });
 
-                            // Volver a vincular eventos después de actualizar la tabla
-                            $('.btnEliminar').on('click', function() {
-                                const productId = $(this).data('id');
-                                eliminarProducto(productId);
-                            });
+                                $('#tblCarrito').html(html);
+                                $('#total_pagar').text(res.total);
+
+                                // Volver a vincular eventos después de actualizar la tabla
+                                $('.btnEliminar').on('click', function() {
+                                    const productNumber = $(this).data('number');
+                                    eliminarProducto(productNumber);
+                                });
+                            } else {
+                                // Si el array de productos está vacío, limpiar el carrito
+                                localStorage.removeItem('productos');
+                                $('#tblCarrito').html('');
+                                $('#total_pagar').text('0.00');
+                            }
 
                             paypal.Buttons({
                                 style: {
@@ -290,25 +301,27 @@ $idCliente = $_SESSION['id_cliente'];
                             console.log(error);
                         }
                     });
+                } else {
+                    // Si el array de productos está vacío, limpiar el carrito
+                    localStorage.removeItem('productos');
+                    $('#tblCarrito').html('');
+                    $('#total_pagar').text('0.00');
                 }
             }
         }
 
-        function eliminarProducto(id) {
-            // Obtener el índice del producto en el array productosEnCarrito
+        function eliminarProducto(number) {
+            // Obtener el array actualizado de productos en el carrito
             let productosEnCarrito = JSON.parse(localStorage.getItem('productos')) || [];
-            let index = productosEnCarrito.findIndex(producto => producto.id === id);
 
-            if (index !== -1) {
-                // Eliminar el producto del array
-                productosEnCarrito.splice(index, 1);
+            // Eliminar el producto del array utilizando el número de fila
+            productosEnCarrito.splice(number - 1, 1);
 
-                // Guardar el array actualizado en el localStorage
-                localStorage.setItem('productos', JSON.stringify(productosEnCarrito));
+            // Guardar el array actualizado en el localStorage
+            localStorage.setItem('productos', JSON.stringify(productosEnCarrito));
 
-                // Volver a cargar el carrito después de eliminar
-                mostrarCarrito();
-            }
+            // Volver a cargar el carrito después de eliminar
+            mostrarCarrito();
         }
 
         $(document).ready(function() {
