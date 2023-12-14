@@ -29,6 +29,25 @@ $idCliente = $_SESSION['id_cliente'];
 </head>
 
 <body>
+
+    <!-- Modal -->
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">RESUMEN DE PEDIDO</h1>
+                </div>
+                <div class="modal-body">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary">finalizar pedido</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- FIN Modal -->
     <!-- Navigation-->
     <div class="container">
         <nav class="navbar navbar-expand-lg navbar-light">
@@ -88,7 +107,7 @@ $idCliente = $_SESSION['id_cliente'];
                         </div>
                         <div id="paypal-button-container"></div>
                         <button class="btn btn-warning" type="button" id="btnVaciar">Vaciar Carrito</button>
-                        <button type="button" class="btn btn-success" style="margin-top: 5px;">Continuar Pedido</button>
+                        <button type="button" class="btn btn-success" style="margin-top: 5px;" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Continuar Pedido</button>
                     </div>
                     <!--Fin de Botones-->
 
