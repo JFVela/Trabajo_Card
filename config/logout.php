@@ -9,6 +9,9 @@ $_SESSION = array();
 session_destroy();
 
 // Redireccionar a la página de inicio o a donde desees después de cerrar sesión
-header("location: ../index.php");
-exit();
+// Limpiar el carrito en el localStorage
+echo "<script>
+        localStorage.removeItem('productos');
+        window.location.href = '../index.php?cartCleared=true';
+      </script>";
 ?>

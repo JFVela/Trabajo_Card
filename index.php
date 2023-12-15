@@ -218,6 +218,9 @@ session_start();
                                             <?php echo $data['precio_normal'] ?>
                                         </span>
                                         <?php echo $data['precio_rebajado'] ?>
+                                        <p>
+                                            STOCK: <?php echo $data['cantidad']; ?> Unidades
+                                        </p>
                                     </div>
                                 </div>
                                 <!-- Product actions-->

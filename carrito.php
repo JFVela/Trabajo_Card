@@ -258,6 +258,7 @@ $idCliente = $_SESSION['id_cliente'];
 
                                 // Obtén el total a pagar
                                 var totalPagar = parseFloat($('#total_pagar_modal').text());
+                                console.log('Total a pagar:', totalPagar);
 
                                 // Deshabilita o habilita los botones según el total a pagar
                                 if (totalPagar > 0) {
@@ -342,6 +343,22 @@ $idCliente = $_SESSION['id_cliente'];
                 // Actualizar el valor del campo oculto
                 $('#totalFinal').val(costoFinal.toFixed(2));
                 $('#tipoEnvioHidden').val(tipoEnvio);
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            // Variable para verificar si el botón ya se ha clicado
+            var botonClicado = false;
+
+            $('#btnVaciar').click(function() {
+                // Verificar si el botón ya se ha clicado
+                if (!botonClicado) {
+                    // Deshabilitar ambos botones
+                    $('#btnVaciar, #btnContinuarPedido').prop('disabled', true);
+                    botonClicado = true;
+                }
             });
         });
     </script>

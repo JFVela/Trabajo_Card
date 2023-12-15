@@ -79,7 +79,9 @@ function generarReferenciaAleatoria()
     }
     return $password;
 }
-
-header("Location: ../index.php");
+// Limpiar el carrito en el localStorage
+echo "<script>
+        localStorage.removeItem('productos');
+        window.location.href = '../index.php?cartCleared=true';
+      </script>";
 exit();
-?>
