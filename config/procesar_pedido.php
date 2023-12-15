@@ -33,19 +33,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Agregar la referencia para pedido_datos
         $referenciaPD = generarReferenciaAleatoria();
 
+        // Inicializar el acumulador de TotalFinal
+        $totalFinal = 0;
+
         // Insertar detalles del pedido en la tabla pedido_datos
         foreach ($productos as $producto) {
             $idProducto = mysqli_real_escape_string($conexion, $producto["idProducto"]);
-            $cantidad = mysqli_real_escape_string($conexion, $producto["cantidad"]);
+            $cantidadPedida = mysqli_real_escape_string($conexion, $producto["cantidad"]);
             $precio = mysqli_real_escape_string($conexion, $producto["precio"]);
             $subtotal = mysqli_real_escape_string($conexion, $producto["subtotal"]);
 
-            $queryProductos = "INSERT INTO `card`.`pedido_datos` (idProductos, referenciaPD, cantPD, precioPD, totalPD) 
-                               VALUES ('$idProducto', '$referenciaPD', '$cantidad', '$precio', '$subtotal')";
+            // Verificar el stock disponible
+            $queryStock = "SELECT cantidad FROM `productos` WHERE id = '$idProducto'";
+            $resultadoStock = mysqli_query($conexion, $queryStock);
 
-            if (!mysqli_query($conexion, $queryProductos)) {
-                echo "Error al insertar detalles del pedido: " . mysqli_error($conexion);
-                // Puedes agregar lógica para revertir el pedido_cliente si falla la inserción de detalles del pedido
+            if ($filaStock = mysqli_fetch_assoc($resultadoStock)) {
+                $stockDisponible = $filaStock["cantidad"];
+
+                // Calcular la cantidad a restar al stock (mínimo entre cantidadPedida y stockDisponible)
+                $cantidadRestar = min($cantidadPedida, $stockDisponible);
+
+                if ($cantidadRestar > 0) {
+                    // Actualizar el stock en la tabla productos
+                    $queryActualizarStock = "UPDATE `productos` SET cantidad = cantidad - $cantidadRestar WHERE id = '$idProducto'";
+                    mysqli_query($conexion, $queryActualizarStock);
+
+                    // Insertar detalles del pedido en la tabla pedido_datos
+                    $queryProductos = "INSERT INTO `card`.`pedido_datos` (idProductos, referenciaPD, cantPD, precioPD, totalPD) 
+                                       VALUES ('$idProducto', '$referenciaPD', '$cantidadRestar', '$precio', '$subtotal')";
+
+                    if (!mysqli_query($conexion, $queryProductos)) {
+                        echo "Error al insertar detalles del pedido: " . mysqli_error($conexion);
+                        // Puedes agregar lógica para revertir el pedido_cliente si falla la inserción de detalles del pedido
+                    }
+
+                    // Acumular el subtotal al TotalFinal
+                    $totalFinal += $subtotal;
+                }
             }
         }
 
@@ -53,8 +77,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $medioPago = mysqli_real_escape_string($conexion, $_POST["medioPago"]);
         $tipoEnvio = mysqli_real_escape_string($conexion, $_POST["tipoEnvio"]);
 
-        // Obtener el TotalFinal del formulario
-        $totalFinal = mysqli_real_escape_string($conexion, $_POST["totalFinal"]);
+        // Agregar monto adicional por envío si el tipo de envío es "Delivery"
+        if ($tipoEnvio == "Delivery") {
+            $totalFinal += 15;
+        }
 
         // Insertar en la tabla pedido
         $queryPedido = "INSERT INTO `card`.`pedido` (referenciaPC, referenciaPD, medioPago, TotalFinal, tipoEnvio) 
@@ -85,3 +111,4 @@ echo "<script>
         window.location.href = '../index.php?cartCleared=true';
       </script>";
 exit();
+?>

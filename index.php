@@ -186,8 +186,11 @@ session_start();
                 $query = mysqli_query($conexion, "SELECT p.*, c.id AS id_cat, c.categoria FROM productos p INNER JOIN categorias c ON c.id = p.id_categoria");
                 $result = mysqli_num_rows($query);
                 if ($result > 0) {
-                    while ($data = mysqli_fetch_assoc($query)) { ?>
-                        <div class="col mb-5 productos" category="<?php echo $data['categoria']; ?>">
+                    while ($data = mysqli_fetch_assoc($query)) {
+                        $stock = $data['cantidad'];
+                        $cardClass = ($stock == 0) ? 'disabled-card' : '';
+                ?>
+                        <div class="col mb-5 productos <?php echo $cardClass; ?>" category="<?php echo $data['categoria']; ?>">
                             <div class="card h-100">
                                 <!-- Sale badge-->
                                 <div class="badge bg-danger text-white position-absolute" style="top: 0.5rem; right: 0.5rem">
@@ -219,19 +222,24 @@ session_start();
                                         </span>
                                         <?php echo $data['precio_rebajado'] ?>
                                         <p>
-                                            STOCK: <?php echo $data['cantidad']; ?> Unidades
+                                            STOCK: <?php echo $stock; ?> Unidades
                                         </p>
                                     </div>
                                 </div>
                                 <!-- Product actions-->
                                 <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                                    <div class="text-center"><a class="btn btn-outline-dark mt-auto agregar" data-id="<?php echo $data['id']; ?>" href="#">Agregar</a></div>
+                                    <div class="text-center">
+                                        <?php if ($stock > 0) { ?>
+                                            <a class="btn btn-outline-dark mt-auto agregar" data-id="<?php echo $data['id']; ?>" href="#">Agregar</a>
+                                        <?php } else { ?>
+                                            <button class="btn btn-outline-dark mt-auto" disabled>Agregar</button>
+                                        <?php } ?>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                 <?php }
                 } ?>
-
             </div>
         </div>
     </section>
