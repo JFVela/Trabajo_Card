@@ -21,7 +21,7 @@ $idCliente = $_SESSION['id_cliente'];
     <title>Carrito de Compras</title>
     <!-- Favicon-->
     <link rel="icon" type="image/x-icon" href="assets/techbocx.ico" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
     <link href="assets/css/styles.css" rel="stylesheet" />
     <link href="assets/css/estilos.css" rel="stylesheet" />
@@ -38,16 +38,82 @@ $idCliente = $_SESSION['id_cliente'];
                     <h1 class="modal-title fs-5" id="staticBackdropLabel">RESUMEN DE PEDIDO</h1>
                 </div>
                 <div class="modal-body">
-                    ...
+                    <!-- FORMULARIO -->
+                    <form method="post" action="config/procesar_pedido.php">
+
+                        <!-- Agrega un campo oculto para enviar el ID del cliente -->
+                        <input type="hidden" name="idCliente" value="<?php echo $idCliente; ?>">
+                        <!-- FIN Agrega un campo oculto para enviar el ID del cliente -->
+
+                        <div class="form-row">
+                            <div class="col" style="margin-bottom: 5px;">
+                                <input type="text" class="form-control" placeholder="Nombres" name="nombre" required>
+                            </div>
+                            <div class="col" style="margin-bottom: 5px;">
+                                <input type="text" class="form-control" placeholder="Apellidos" name="apellido" required>
+                            </div>
+                            <div class="col" style="margin-bottom: 5px;">
+                                <input type="text" class="form-control" placeholder="Localización" name="localizacion" required>
+                            </div>
+                            <div class="col" style="margin-bottom: 5px;">
+                                <input type="email" class="form-control" id="email" placeholder="Correo Electrónico" name="correo" required>
+                                <div class="invalid-feedback">
+                                    Por favor, ingrese un correo electrónico válido.
+                                </div>
+                            </div>
+                            <div class="col" style="margin-bottom: 5px;">
+                                <input type="number" class="form-control" placeholder="Telefono" name="telefono" required>
+                            </div>
+                            <div class="col" style="margin-bottom: 5px;">
+                                <select class="form-control" id="tipoEnvio" required>
+                                    <option value="">Tipo de envío</option>
+                                    <option value="1">Recoger en tienda</option>
+                                    <option value="2">Delivery</option>
+                                </select>
+
+                            </div>
+
+                            <div class="col" style="margin-bottom: 5px;">
+                                <select class="form-control" id="paymentMethod" required>
+                                    <option value="">Seleccione un medio de pago</option>
+                                    <option value="1">BCP</option>
+                                    <option value="2">PayPal</option>
+                                    <option value="3">Visa</option>
+                                </select>
+                            </div>
+                            <div class="col" style="margin-bottom: 5px; margin-right: 5px;">
+                                <input type="text" class="form-control" id="cardName" placeholder="Nombre en la tarjeta" disabled required>
+                            </div>
+                            <div class="col" style="margin-bottom: 5px; margin-right: 5px;">
+                                <input type="text" class="form-control" id="cardNumber" placeholder="Número de tarjeta de crédito" disabled required>
+                            </div>
+
+                        </div>
+                        <!-- TOTAL A PAGAR -->
+                        <div class="col" style="margin-bottom: 5px;">
+                            <h6>Costo a Pagar S/: <span id="total_pagar_modal">0.00</span></h6>
+                        </div>
+                        <!-- Costo de envío -->
+                        <div class="col" style="margin-bottom: 5px;">
+                            <h6>Costo de envío: <span id="costo_envio">0.00</span></h6>
+                        </div>
+                        <!-- Costo Final -->
+                        <div class="col" style="margin-bottom: 5px;">
+                            <h6>Costo Final: <span id="costo_final">0.00</span></h6>
+                        </div>
+                        <div class="text-end"> <!-- Esto alinea el contenido a la derecha -->
+                            <button type="submit" class="btn btn-primary">Finalizar Pedido</button>
+                        </div>
+                    </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-primary">finalizar pedido</button>
                 </div>
             </div>
         </div>
     </div>
     <!-- FIN Modal -->
+
     <!-- Navigation-->
     <div class="container">
         <nav class="navbar navbar-expand-lg navbar-light">
@@ -102,128 +168,14 @@ $idCliente = $_SESSION['id_cliente'];
 
                     <!--Botones-->
                     <div class="d-grid gap-2">
-                        <div class="boton-modal">
-                            <label for="btn-modal" class="btn btn-primary">Pagar</label>
-                        </div>
-                        <div id="paypal-button-container"></div>
-                        <button class="btn btn-warning" type="button" id="btnVaciar">Vaciar Carrito</button>
                         <button type="button" class="btn btn-success" style="margin-top: 5px;" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Continuar Pedido</button>
+                        <button class="btn btn-warning" type="button" id="btnVaciar">Vaciar Carrito</button>
                     </div>
                     <!--Fin de Botones-->
 
 
                     <!--Ventana Modal-->
                     <input type="checkbox" id="btn-modal">
-                    <div class="container-modal">
-                        <div class="content-modal">
-                            <div class="col-md-8 order-md-1">
-                                <h4 class="mb-3">Dirección de Envio</h4>
-                                <form class="needs-validation" novalidate="">
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="firstName">Nombre</label>
-                                            <input type="text" class="form-control" id="firstName" placeholder="" value="" required="" />
-                                            <div class="invalid-feedback">
-                                                Se requiere un nombre válido.
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="lastName">Apellido</label>
-                                            <input type="text" class="form-control" id="lastName" placeholder="" value="" required="" />
-                                            <div class="invalid-feedback">Se requiere un apellido válido.</div>
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="username">Nombre de usuario</label>
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text">@</span>
-                                            </div>
-                                            <input type="text" class="form-control" id="username" placeholder="Username" required="" />
-                                            <div class="invalid-feedback" style="width: 100%">
-                                                Su nombre de usuario es requerido.
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="email">Correo electrónico <span class="text-muted">(Optional)</span></label>
-                                        <input type="email" class="form-control" id="email" placeholder="u21232728@utp.edu.pe" />
-                                        <div class="invalid-feedback">
-                                            Ingrese una dirección de correo electrónico válida para recibir actualizaciones de envío. </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-5 mb-3">
-                                            <label for="country">Pais</label>
-                                            <select class="custom-select d-block w-100" id="country" required="">
-                                                <option value="">Elegir...</option>
-                                                <option>Peru</option>
-                                            </select>
-                                            <div class="invalid-feedback">
-                                                Seleccione un país válido.
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 mb-3">
-                                            <label for="state">Departamento</label>
-                                            <select class="custom-select d-block w-100" id="state" required="">
-                                                <option value="">Elegir...</option>
-                                                <option>Lima</option>
-                                                <option>Ayacucho</option>
-                                                <option>Arequipa</option>
-                                                <option>Ica</option>
-                                                <option>Callao</option>
-                                                <option>Arequipa</option>
-                                                <option>Cajamarca</option>
-                                            </select>
-                                            <div class="invalid-feedback">
-                                                Proporcione un estado válido.
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3 mb-3">
-                                            <label for="zip">Codigo Postal</label>
-                                            <input type="text" class="form-control" id="zip" placeholder="" required="" />
-                                            <div class="invalid-feedback">Se requiere código postal.</div>
-                                        </div>
-                                    </div>
-
-                                    <hr class="mb-4" />
-                                    <h4 class="mb-3">Pago</h4>
-                                    <div class="d-block my-3">
-                                        <div class="custom-control custom-radio">
-                                            <input id="credit" name="paymentMethod" type="radio" class="custom-control-input" checked="" required="" />
-                                            <label class="custom-control-label" for="credit">Tarjeta de crédito</label>
-                                        </div>
-                                        <div class="custom-control custom-radio">
-                                            <input id="debit" name="paymentMethod" type="radio" class="custom-control-input" required="" />
-                                            <label class="custom-control-label" for="debit">Tarjeta de débito</label>
-                                        </div>
-                                        <div class="custom-control custom-radio">
-                                            <input id="paypal" name="paymentMethod" type="radio" class="custom-control-input" required="" />
-                                            <label class="custom-control-label" for="paypal">PayPal</label>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="cc-name">Nombre en la tarjeta</label>
-                                            <input type="text" class="form-control" id="cc-name" placeholder="" required="" />
-                                            <div class="invalid-feedback">Se requiere el nombre en la tarjeta</div>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="cc-number">Número de Tarjeta de Crédito</label>
-                                            <input type="text" class="form-control" id="cc-number" placeholder="" required="" />
-                                            <div class="invalid-feedback">
-                                                Se requiere número de tarjeta de crédito
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <hr class="mb-4" />
-                                    <button class="btn btn-primary btn-lg btn-block" type="submit">
-                                        Continuar a la comprobación
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-
-                    </div>
                 </div>
                 <label for="btn-modal" class="cerrar-modal"></label>
             </div>
@@ -239,10 +191,9 @@ $idCliente = $_SESSION['id_cliente'];
     <?php include("admin/includes/footer.php"); ?>
 
     <!-- Bootstrap core JS-->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <!-- Core theme JS-->
     <script src="assets/js/jquery-3.6.0.min.js"></script>
-    <script src="https://www.paypal.com/sdk/js?client-id=<?php echo CLIENT_ID; ?>&locale=<?php echo LOCALE; ?>"></script>
     <script src="assets/js/scripts.js"></script>
     <script>
         function mostrarCarrito() {
@@ -281,6 +232,7 @@ $idCliente = $_SESSION['id_cliente'];
 
                                 $('#tblCarrito').html(html);
                                 $('#total_pagar').text(res.total);
+                                $('#total_pagar_modal').text(res.total); // Actualiza el Total a Pagar en el modal
 
                                 // Volver a vincular eventos después de actualizar la tabla
                                 $('.btnEliminar').on('click', function() {
@@ -292,6 +244,7 @@ $idCliente = $_SESSION['id_cliente'];
                                 localStorage.removeItem('productos');
                                 $('#tblCarrito').html('');
                                 $('#total_pagar').text('0.00');
+                                $('#total_pagar_modal').text('0.00'); // Actualiza el Total a Pagar en el modal
                             }
 
                             paypal.Buttons({
@@ -342,12 +295,40 @@ $idCliente = $_SESSION['id_cliente'];
             // Volver a cargar el carrito después de eliminar
             mostrarCarrito();
         }
-
         $(document).ready(function() {
             mostrarCarrito();
         });
     </script>
-</body>
 
+    <script>
+        $(document).ready(function() {
+            $('#paymentMethod').change(function() {
+                if ($(this).val() !== '') {
+                    $('#cardName, #cardNumber').prop('disabled', false);
+                } else {
+                    $('#cardName, #cardNumber').prop('disabled', true);
+                }
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            $('#tipoEnvio').change(function() {
+                // Obtener el valor seleccionado del tipo de envío
+                var tipoEnvio = $(this).val();
+
+                // Actualizar el costo de envío y el costo final según el tipo de envío
+                var costoEnvio = tipoEnvio === '2' ? 15.00 : 0.00; // 2 representa Delivery
+                var costoPagar = parseFloat($('#total_pagar_modal').text());
+                var costoFinal = costoPagar + costoEnvio;
+
+                // Actualizar los valores en el HTML
+                $('#costo_envio').text(costoEnvio.toFixed(2));
+                $('#costo_final').text(costoFinal.toFixed(2));
+            });
+        });
+    </script>
+</body>
 
 </html>
