@@ -44,12 +44,14 @@ session_start();
                         // Verificar si la sesión está activa
                         if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
                             echo '<li class="nav-item text-info">Bienvenido, ' . $_SESSION["nombre"] . '!</li>';
+                            echo '<a href="listaCompras.php" class="nav-link text-info" data-category="verCompras">Compras</a>';
                             echo '<a href="config/logout.php" class="nav-link text-info" data-category="logout">Cerrar Sesión</a>';
                         } else {
                             echo '<a href="login.php" class="nav-link text-info" data-category="login">Iniciar Sesión</a>';
                         }
                         ?>
                     </ul>
+
                 </div>
             </div>
         </nav>

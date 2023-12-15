@@ -80,3 +80,6 @@ function generarReferenciaAleatoria()
     return $password;
 }
 
+header("Location: ../index.php");
+exit();
+?>

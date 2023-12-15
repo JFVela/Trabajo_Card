@@ -172,11 +172,10 @@ $idCliente = $_SESSION['id_cliente'];
 
                     <!--Botones-->
                     <div class="d-grid gap-2">
-                        <button type="button" class="btn btn-success" style="margin-top: 5px;" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Continuar Pedido</button>
-                        <button class="btn btn-warning" type="button" id="btnVaciar">Vaciar Carrito</button>
+                        <button type="button" class="btn btn-success" style="margin-top: 5px;" data-bs-toggle="modal" data-bs-target="#staticBackdrop" id="btnContinuarPedido" disabled>Continuar Pedido</button>
+                        <button class="btn btn-warning" type="button" id="btnVaciar" disabled>Vaciar Carrito</button>
                     </div>
                     <!--Fin de Botones-->
-
 
                     <!--Ventana Modal-->
                     <input type="checkbox" id="btn-modal">
@@ -256,6 +255,16 @@ $idCliente = $_SESSION['id_cliente'];
 
                                 // Agregar un campo oculto para enviar la información necesaria
                                 $('#datosInsercion').val(JSON.stringify(datosInsercion));
+
+                                // Obtén el total a pagar
+                                var totalPagar = parseFloat($('#total_pagar_modal').text());
+
+                                // Deshabilita o habilita los botones según el total a pagar
+                                if (totalPagar > 0) {
+                                    $('#btnContinuarPedido, #btnVaciar').prop('disabled', false);
+                                } else {
+                                    $('#btnContinuarPedido, #btnVaciar').prop('disabled', true);
+                                }
 
                             } else {
                                 // Si el array de productos está vacío, limpiar el carrito
