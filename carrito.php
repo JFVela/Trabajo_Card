@@ -273,6 +273,7 @@ $idCliente = $_SESSION['id_cliente'];
                                 $('#tblCarrito').html('');
                                 $('#total_pagar').text('0.00');
                                 $('#total_pagar_modal').text('0.00'); // Actualiza el Total a Pagar en el modal
+                                $('#btnContinuarPedido, #btnVaciar').prop('disabled', true);
                             }
                         },
                         error: function(error) {
@@ -284,6 +285,7 @@ $idCliente = $_SESSION['id_cliente'];
                     localStorage.removeItem('productos');
                     $('#tblCarrito').html('');
                     $('#total_pagar').text('0.00');
+                    $('#btnContinuarPedido, #btnVaciar').prop('disabled', true);
                 }
             }
         }
