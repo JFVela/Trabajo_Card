@@ -65,15 +65,17 @@ $idCliente = $_SESSION['id_cliente'];
                             <div class="col" style="margin-bottom: 5px;">
                                 <input type="number" class="form-control" placeholder="Telefono" name="telefono" required>
                             </div>
+                            <!-- Agrega un campo oculto -->
+                            <input type="hidden" name="tipoEnvio" id="tipoEnvioHidden" value="">
                             <div class="col" style="margin-bottom: 5px;">
                                 <select class="form-control" id="tipoEnvio" required>
                                     <option value="">Tipo de envío</option>
                                     <option value="1">Recoger en tienda</option>
                                     <option value="2">Delivery</option>
                                 </select>
-
                             </div>
-
+                            <!-- Agrega un campo oculto -->
+                            <input type="hidden" name="medioPago" id="medioPago" value="">
                             <div class="col" style="margin-bottom: 5px;">
                                 <select class="form-control" id="paymentMethod" required>
                                     <option value="">Seleccione un medio de pago</option>
@@ -102,6 +104,7 @@ $idCliente = $_SESSION['id_cliente'];
                         <div class="col" style="margin-bottom: 5px;">
                             <h6>Costo Final: <span id="costo_final">0.00</span></h6>
                         </div>
+                        <input type="hidden" name="totalFinal" id="totalFinal" value="0.00">
                         <div class="text-end"> <!-- Esto alinea el contenido a la derecha -->
                             <button type="submit" class="btn btn-primary">Finalizar Pedido</button>
                         </div>
@@ -296,7 +299,14 @@ $idCliente = $_SESSION['id_cliente'];
     <script>
         $(document).ready(function() {
             $('#paymentMethod').change(function() {
-                if ($(this).val() !== '') {
+                // Obtener el valor seleccionado del medio de pago
+                var medioPago = $(this).find(":selected").text();
+
+                // Actualizar el valor del campo oculto
+                $('#medioPago').val(medioPago);
+
+                // Habilitar o deshabilitar campos según la selección
+                if (medioPago !== '') {
                     $('#cardName, #cardNumber').prop('disabled', false);
                 } else {
                     $('#cardName, #cardNumber').prop('disabled', true);
@@ -305,20 +315,24 @@ $idCliente = $_SESSION['id_cliente'];
         });
     </script>
 
+
     <script>
         $(document).ready(function() {
             $('#tipoEnvio').change(function() {
                 // Obtener el valor seleccionado del tipo de envío
-                var tipoEnvio = $(this).val();
-
+                var tipoEnvio = $(this).find(":selected").text();
                 // Actualizar el costo de envío y el costo final según el tipo de envío
-                var costoEnvio = tipoEnvio === '2' ? 15.00 : 0.00; // 2 representa Delivery
+                var costoEnvio = tipoEnvio === 'Delivery' ? 15.00 : 0.00; // 2 representa Delivery
                 var costoPagar = parseFloat($('#total_pagar_modal').text());
                 var costoFinal = costoPagar + costoEnvio;
 
                 // Actualizar los valores en el HTML
                 $('#costo_envio').text(costoEnvio.toFixed(2));
                 $('#costo_final').text(costoFinal.toFixed(2));
+
+                // Actualizar el valor del campo oculto
+                $('#totalFinal').val(costoFinal.toFixed(2));
+                $('#tipoEnvioHidden').val(tipoEnvio);
             });
         });
     </script>

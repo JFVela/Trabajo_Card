@@ -39,14 +39,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $cantidad = mysqli_real_escape_string($conexion, $producto["cantidad"]);
             $precio = mysqli_real_escape_string($conexion, $producto["precio"]);
             $subtotal = mysqli_real_escape_string($conexion, $producto["subtotal"]);
-        
+
             $queryProductos = "INSERT INTO `card`.`pedido_datos` (idProductos, referenciaPD, cantPD, precioPD, totalPD) 
                                VALUES ('$idProducto', '$referenciaPD', '$cantidad', '$precio', '$subtotal')";
-        
+
             if (!mysqli_query($conexion, $queryProductos)) {
                 echo "Error al insertar detalles del pedido: " . mysqli_error($conexion);
                 // Puedes agregar lógica para revertir el pedido_cliente si falla la inserción de detalles del pedido
             }
+        }
+
+        // Obtener el medio de pago y tipo de envío del formulario
+        $medioPago = mysqli_real_escape_string($conexion, $_POST["medioPago"]);
+        $tipoEnvio = mysqli_real_escape_string($conexion, $_POST["tipoEnvio"]);
+
+        // Obtener el TotalFinal del formulario
+        $totalFinal = mysqli_real_escape_string($conexion, $_POST["totalFinal"]);
+
+        // Insertar en la tabla pedido
+        $queryPedido = "INSERT INTO `card`.`pedido` (referenciaPC, referenciaPD, medioPago, TotalFinal, tipoEnvio) 
+                        VALUES ('$referenciaPC', '$referenciaPD', '$medioPago', '$totalFinal', '$tipoEnvio')";
+
+        if (!mysqli_query($conexion, $queryPedido)) {
+            echo "Error al insertar datos del pedido: " . mysqli_error($conexion);
         }
     } else {
         echo "Error al insertar datos del cliente: " . mysqli_error($conexion);
@@ -55,7 +70,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     mysqli_close($conexion);
 }
 
-function generarReferenciaAleatoria() {
+function generarReferenciaAleatoria()
+{
     $str = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZabcdefghijklmnñopqrstuvwxyx123456789";
     $password = "";
     for ($i = 0; $i < 5; $i++) {
@@ -63,4 +79,4 @@ function generarReferenciaAleatoria() {
     }
     return $password;
 }
-?>
+
