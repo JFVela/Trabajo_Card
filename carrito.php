@@ -43,8 +43,9 @@ $idCliente = $_SESSION['id_cliente'];
 
                         <!-- Agrega un campo oculto para enviar el ID del cliente -->
                         <input type="hidden" name="idCliente" value="<?php echo $idCliente; ?>">
-                        <!-- FIN Agrega un campo oculto para enviar el ID del cliente -->
-
+                        <!-- Agrega un campo oculto para enviar la información de productos -->
+                        <input type="hidden" name="productos" id="datosInsercion" value="">
+                        <!-- FIN -->
                         <div class="form-row">
                             <div class="col" style="margin-bottom: 5px;">
                                 <input type="text" class="form-control" placeholder="Nombres" name="nombre" required>
@@ -217,17 +218,17 @@ $idCliente = $_SESSION['id_cliente'];
                             if (res.datos.length > 0) {
                                 res.datos.forEach((element, index) => {
                                     html += `
-                        <tr>
-                            <td>${index + 1}</td>
-                            <td>${element.id}</td>
-                            <td>${element.nombre}</td>
-                            <td>${element.precio}</td>
-                            <td>1</td>
-                            <td>${element.precio}</td>
-                            <td>
-                                <button class="btn btn-danger btnEliminar" data-number="${index + 1}">Eliminar</button>
-                            </td>
-                        </tr>`;
+                                <tr>
+                                    <td>${index + 1}</td>
+                                    <td>${element.id}</td>
+                                    <td>${element.nombre}</td>
+                                    <td>${element.precio}</td>
+                                    <td>1</td>
+                                    <td>${element.precio}</td>
+                                    <td>
+                                        <button class="btn btn-danger btnEliminar" data-number="${index + 1}">Eliminar</button>
+                                    </td>
+                                </tr>`;
                                 });
 
                                 $('#tblCarrito').html(html);
@@ -239,6 +240,20 @@ $idCliente = $_SESSION['id_cliente'];
                                     const productNumber = $(this).data('number');
                                     eliminarProducto(productNumber);
                                 });
+
+                                // Enviar información necesaria para la inserción en la base de datos
+                                const datosInsercion = res.datos.map((element) => {
+                                    return {
+                                        idProducto: element.id,
+                                        cantidad: 1,
+                                        precio: element.precio,
+                                        subtotal: element.precio
+                                    };
+                                });
+
+                                // Agregar un campo oculto para enviar la información necesaria
+                                $('#datosInsercion').val(JSON.stringify(datosInsercion));
+
                             } else {
                                 // Si el array de productos está vacío, limpiar el carrito
                                 localStorage.removeItem('productos');
@@ -246,28 +261,6 @@ $idCliente = $_SESSION['id_cliente'];
                                 $('#total_pagar').text('0.00');
                                 $('#total_pagar_modal').text('0.00'); // Actualiza el Total a Pagar en el modal
                             }
-
-                            paypal.Buttons({
-                                style: {
-                                    color: 'blue',
-                                    shape: 'pill',
-                                    label: 'pay'
-                                },
-                                createOrder: function(data, actions) {
-                                    return actions.order.create({
-                                        purchase_units: [{
-                                            amount: {
-                                                value: res.total
-                                            }
-                                        }]
-                                    });
-                                },
-                                onApprove: function(data, actions) {
-                                    return actions.order.capture().then(function(details) {
-                                        alert('Transaction completed by ' + details.payer.name.given_name);
-                                    });
-                                }
-                            }).render('#paypal-button-container');
                         },
                         error: function(error) {
                             console.log(error);
@@ -329,6 +322,7 @@ $idCliente = $_SESSION['id_cliente'];
             });
         });
     </script>
+
 </body>
 
 </html>
